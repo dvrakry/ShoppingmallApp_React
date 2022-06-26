@@ -35,7 +35,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
+//ROUTER 분기
 app.use("/api/users", require("./routes/users"));
+app.use("/api/product", require("./routes/product"));
 
 //use this to show the image you have in node js server to client (react js)
 //https://stackoverflow.com/questions/48914987/send-image-path-from-node-js-express-server-to-react-client
@@ -46,6 +48,8 @@ if (process.env.NODE_ENV === "production") {
   // Set static folder
   // All the javascript and css files will be read and served from this folder
   app.use(express.static("client/build"));
+
+  app.use("/uploads", express.static("uploads"));
 
   // index.html for all page routes    html or routing and naviagtion
   app.get("*", (req, res) => {
