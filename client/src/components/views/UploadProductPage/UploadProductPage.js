@@ -62,10 +62,10 @@ function UploadProductPage(props) {
     //서버에 채운 값들을 request 로 보낸다
     Axios.post("/api/product", body).then((response) => {
       if (response.data.success) {
-        alert("상품 업로드 성공");
+        alert("상품 업로드 성공!");
         props.history.push("/");
       } else {
-        alert("상품 업로드 실패");
+        alert("상품 업로드 실패!");
       }
     });
   };
