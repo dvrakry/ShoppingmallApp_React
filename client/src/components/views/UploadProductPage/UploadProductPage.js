@@ -57,6 +57,7 @@ function UploadProductPage(props) {
       description: Description,
       price: Price,
       continents: Continent,
+      images: Images,
     };
 
     //서버에 채운 값들을 request 로 보낸다

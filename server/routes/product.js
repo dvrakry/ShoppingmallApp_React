@@ -41,4 +41,22 @@ router.post("/", (req, res) => {
   });
 });
 
+router.post("/products", (req, res) => {
+  //product collection(DB)에 있는 모든 상품 정보를 가져오기
+
+  let limit = req.body.limit ? parseInt(req.body.limit) : 100;
+  let skip = req.body.skip ? parseInt(req.body.skip) : 0;
+
+  Product.find()
+    .populate("writer")
+    .skip(skip)
+    .limit(limit)
+    .exec((err, productsInfo) => {
+      if (err) return res.status(400).json({ success: false });
+      return res
+        .status(200)
+        .json({ success: true, productsInfo, postSize: productsInfo.length });
+    });
+});
+
 module.exports = router;
