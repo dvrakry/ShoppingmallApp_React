@@ -22,6 +22,7 @@ function CheckBox(props) {
     }
     //STATE 를 넣어준다
     setChecked(newChecked);
+    props.handleFilters(newChecked);
   };
 
   const renderCheckBoxLists = () =>

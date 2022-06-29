@@ -46,17 +46,54 @@ router.post("/products", (req, res) => {
 
   let limit = req.body.limit ? parseInt(req.body.limit) : 100;
   let skip = req.body.skip ? parseInt(req.body.skip) : 0;
+  let term = req.body.searchTerm;
 
-  Product.find()
-    .populate("writer")
-    .skip(skip)
-    .limit(limit)
-    .exec((err, productsInfo) => {
-      if (err) return res.status(400).json({ success: false });
-      return res
-        .status(200)
-        .json({ success: true, productsInfo, postSize: productsInfo.length });
-    });
+  let findArgs = {};
+
+  for (let key in req.body.filters) {
+    if (req.body.filters[key].length > 0) {
+      //category= price
+      if (key === "price") {
+        findArgs[key] = {
+          $gte: req.body.filters[key][0], //Greater Than Equal
+          $lte: req.body.filters[key][1], //Less Than Equal
+        };
+      } else {
+        //category=continents
+        findArgs[key] = req.body.filters[key];
+      }
+    }
+  }
+
+  if (term) {
+    console.log("1111111");
+    console.log("term", term);
+
+    Product.find(findArgs)
+      .find({ $text: { $search: term } })
+      .populate("writer")
+      .skip(skip)
+      .limit(limit)
+      .exec((err, productsInfo) => {
+        if (err) return res.status(400).json({ success: false });
+        return res
+          .status(200)
+          .json({ success: true, productsInfo, postSize: productsInfo.length });
+      });
+  } else {
+    console.log("2222222222");
+
+    Product.find(findArgs)
+      .populate("writer")
+      .skip(skip)
+      .limit(limit)
+      .exec((err, productsInfo) => {
+        if (err) return res.status(400).json({ success: false });
+        return res
+          .status(200)
+          .json({ success: true, productsInfo, postSize: productsInfo.length });
+      });
+  }
 });
 
 module.exports = router;

@@ -5,7 +5,9 @@ import { Icon, Col, Card, Row, Carousel } from "antd";
 import Meta from "antd/lib/card/Meta";
 import ImageSlider from "../../utils/ImageSlider";
 import CheckBox from "./Section/CheckBox";
-import { continents } from "./Section/Datas";
+import { continents, price } from "./Section/Datas";
+import RadioBox from "./Section/RadioBox";
+import SearchFeature from "./Section/SearchFeature";
 
 function LandingPage() {
   const [Products, setProducts] = useState([]);
@@ -16,6 +18,7 @@ function LandingPage() {
     continents: [],
     price: [],
   });
+  const [SearchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     let body = {
@@ -55,7 +58,6 @@ function LandingPage() {
   };
 
   const renderCards = Products.map((product, index) => {
-    console.log("product", product);
     return (
       <Col lg={6} md={8} xs={24} key={index}>
         <Card cover={<ImageSlider images={product.images} />}>
@@ -76,12 +78,44 @@ function LandingPage() {
     setSkip(0);
   };
 
+  const handlePrice = (value) => {
+    const data = price;
+    let array = [];
+    for (let key in data) {
+      if (data[key]._id === parseInt(value)) {
+        array = data[key].array;
+      }
+    }
+    return array;
+  };
+
   const handleFilters = (filters, category) => {
     const newFilters = { ...Filters };
 
     newFilters[category] = filters;
 
-    showFilterResults();
+    console.log("filters", filters);
+
+    if (category === "price") {
+      let priceValues = handlePrice(filters);
+      newFilters[category] = priceValues;
+    }
+
+    showFilterResults(newFilters);
+    setFilters(newFilters);
+  };
+
+  const updateSearchTerm = (newSearchTerm) => {
+    let body = {
+      skip: 0,
+      limit: Limit,
+      filters: Filters,
+      searchTerm: newSearchTerm,
+    };
+
+    setSkip(0);
+    setSearchTerm(newSearchTerm);
+    getProducts(body);
   };
 
   return (
@@ -93,19 +127,36 @@ function LandingPage() {
       </div>
 
       {/* Filter */}
-
-      {/* CheckBox */}
-      <CheckBox
-        list={continents}
-        handleFilters={(filter) => handleFilters(filters, "continents")}
-      />
-
-      {/* RadioBox */}
+      <Row gutter={[16, 16]}>
+        <Col lg={12} xs={24}>
+          {/* CheckBox */}
+          <CheckBox
+            list={continents}
+            handleFilters={(filters) => handleFilters(filters, "continents")}
+          />
+        </Col>
+        <Col lg={12} xs={24}>
+          {/* RadioBox */}
+          <RadioBox
+            list={price}
+            handleFilters={(filters) => handleFilters(filters, "price")}
+          />
+        </Col>
+      </Row>
 
       {/* Search */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          margin: "1rem auto",
+        }}
+      >
+        <SearchFeature refreshFunction={updateSearchTerm} />
+      </div>
 
       {/* Cards */}
-      <Row gutter={16}>{renderCards}</Row>
+      <Row gutter={[16, 16]}>{renderCards}</Row>
 
       {PostSize >= Limit && (
         <div style={{ justifyContent: "center" }}>
