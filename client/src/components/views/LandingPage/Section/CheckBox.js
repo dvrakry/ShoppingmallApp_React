@@ -37,7 +37,7 @@ function CheckBox(props) {
       </React.Fragment>
     ));
   return (
-    <Collapse defaultActiveKey={["1"]}>
+    <Collapse defaultActiveKey={["0"]}>
       <Panel header="Continent" key="1">
         {renderCheckBoxLists()}
       </Panel>

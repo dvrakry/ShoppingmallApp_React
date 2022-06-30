@@ -66,9 +66,6 @@ router.post("/products", (req, res) => {
   }
 
   if (term) {
-    console.log("1111111");
-    console.log("term", term);
-
     Product.find(findArgs)
       .find({ $text: { $search: term } })
       .populate("writer")
@@ -81,8 +78,6 @@ router.post("/products", (req, res) => {
           .json({ success: true, productsInfo, postSize: productsInfo.length });
       });
   } else {
-    console.log("2222222222");
-
     Product.find(findArgs)
       .populate("writer")
       .skip(skip)
@@ -94,6 +89,20 @@ router.post("/products", (req, res) => {
           .json({ success: true, productsInfo, postSize: productsInfo.length });
       });
   }
+});
+
+router.get(`/product_by_id`, (req, res) => {
+  let type = req.query.type;
+  let productId = req.query.id;
+
+  //productId를 이용해서 DB에서 productId와 같은 상품의 정보를 가져온다.
+
+  Product.find({ _id: productId })
+    .populate("writer")
+    .exec((err, product) => {
+      if (err) return res.status(400).send(err);
+      return res.status(200).send({ success: true, product });
+    });
 });
 
 module.exports = router;
