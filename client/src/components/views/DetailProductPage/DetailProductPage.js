@@ -13,13 +13,9 @@ function DetailProductPage(props) {
     axios
       .get(`/api/product/product_by_id?id=${productId}&type=single`)
       .then((response) => {
-        if (response.data.success) {
-          console.log("response data: ", response.data);
-          setProduct(response.data.product[0]);
-        } else {
-          alert("상세 정보 가져오기를 실패함");
-        }
-      });
+        setProduct(response.data[0]);
+      })
+      .catch((err) => alert(err));
   }, []);
 
   return (
