@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { getCartItems, removeCartItem } from "../../../_actions/user_actions";
+import {
+  getCartItems,
+  removeCartItem,
+  onSuccessBuy,
+} from "../../../_actions/user_actions";
 import UserCardBlock from "./Sections/UserCardBlock";
-import { Empty } from "antd";
+import { Empty, Result } from "antd";
+import Paypal from "../../utils/Paypal";
 
 function CartPage(props) {
   const dispatch = useDispatch();
 
   const [Total, setTotal] = useState(0);
-  const [showTotal, setShowTotal] = useState(false);
+  const [ShowTotal, setShowTotal] = useState(false);
+  const [ShowSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     let cartItems = [];
@@ -47,8 +53,27 @@ function CartPage(props) {
       }
     });
 
+  //Paypal.js 에서 정보 받아오기 -> 액션
+  const transactionSuccess = (data) => {
+    console.log("dispatch");
+    dispatch(
+      onSuccessBuy({
+        paymentData: data,
+        cartDetail: props.user.cartDetail,
+      })
+    ).then((response) => {
+      console.log("111111");
+      if (response.payload.success) {
+        setShowTotal(false);
+        setShowSuccess(true);
+      }
+    });
+  };
+
   return (
     <div style={{ width: "85%", margin: "3rem auto" }}>
+      <h1>My Cart</h1>
+
       <div>
         <UserCardBlock
           products={props.user.cartDetail}
@@ -56,16 +81,20 @@ function CartPage(props) {
         />
       </div>
 
-      {showTotal ? (
+      {ShowTotal ? (
         <div style={{ marginTop: "3rem" }}>
-          <h2>Total Amount: $ {Total} </h2>
+          <h2>Total Amount: ${Total}</h2>
         </div>
+      ) : ShowSuccess ? (
+        <Result status="success" title="Successfully Purchased Items" />
       ) : (
         <>
           <br />
           <Empty description={false} />
         </>
       )}
+
+      {ShowTotal && <Paypal total={Total} onSuccess={transactionSuccess} />}
     </div>
   );
 }
