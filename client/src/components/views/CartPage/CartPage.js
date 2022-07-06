@@ -56,6 +56,7 @@ function CartPage(props) {
   //Paypal.js 에서 정보 받아오기 -> 액션
   const transactionSuccess = (data) => {
     console.log("dispatch");
+
     dispatch(
       onSuccessBuy({
         paymentData: data,
